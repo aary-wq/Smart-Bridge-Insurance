@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Insurance Fraud Detection{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="icon-circle">
+                <i class="fas fa-lock"></i>
+            </div>
+            <h2 class="auth-title">Welcome Back</h2>
+            <p class="auth-subtitle">Login to your account</p>
+        </div>
+
+        <form method="POST" novalidate>
+            {{ form.hidden_tag() }}
+            
+            <div class="form-section account-section">
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-envelope"></i>
+                        {{ form.email.label.text }}
+                    </label>
+                    {{ form.email(class="form-control", placeholder="Enter your email", autofocus=true) }}
+                    {% if form.email.errors %}
+                        <span class="error-message">
+                            <i class="fas fa-exclamation-circle"></i>
+                            {{ form.email.errors[0] }}
+                        </span>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-key"></i>
+                        {{ form.password.label.text }}
+                    </label>
+                    {{ form.password(class="form-control", placeholder="Enter your password") }}
+                    {% if form.password.errors %}
+                        <span class="error-message">
+                            <i class="fas fa-exclamation-circle"></i>
+                            {{ form.password.errors[0] }}
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit">
+                <i class="fas fa-sign-in-alt"></i>
+                <span>Login</span>
+            </button>
+        </form>
+
+        <div class="form-footer">
+            <p>
+                Don't have an account? 
+                <a href="{{ url_for('signup') }}">
+                    Sign up here <i class="fas fa-arrow-right"></i>
+                </a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

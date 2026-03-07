@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Insurance Fraud Detection{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-container">
+        <div class="hero-content">
+            <h1>
+                <i class="fas fa-brain"></i>
+                Insurance Fraud Detection System
+            </h1>
+            <p class="hero-subtitle">
+                Advanced AI-powered system to detect fraudulent insurance claims with unmatched accuracy
+            </p>
+            <div class="hero-buttons">
+                {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('claim_form') }}" class="btn-hero btn-hero-primary">
+                        <i class="fas fa-file-medical"></i>
+                        <span>Submit a Claim</span>
+                    </a>
+                {% else %}
+                    <a href="{{ url_for('signup') }}" class="btn-hero btn-hero-primary">
+                        <i class="fas fa-rocket"></i>
+                        <span>Get Started</span>
+                    </a>
+                    <a href="{{ url_for('login') }}" class="btn-hero btn-hero-secondary">
+                        <i class="fas fa-sign-in-alt"></i>
+                        <span>Login</span>
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features">
+    <div class="features-container">
+        <h2 class="section-title">
+            <i class="fas fa-star"></i> Why Choose Our System?
+        </h2>
+        
+        <div class="features-grid">
+            <!-- Feature 1 -->
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <h3>AI-Powered Detection</h3>
+                <p>Advanced machine learning algorithms analyze patterns to identify potential fraud with exceptional accuracy</p>
+            </div>
+
+            <!-- Feature 2 -->
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <h3>Real-time Analysis</h3>
+                <p>Get instant results on claim submissions with lightning-fast processing and high accuracy rates</p>
+            </div>
+
+            <!-- Feature 3 -->
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3>Secure & Private</h3>
+                <p>Your data is encrypted and stored securely with industry-standard security protocols and best practices</p>
+            </div>
+
+            <!-- Feature 4 -->
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3>Comprehensive Reports</h3>
+                <p>Detailed analysis and confidence scores for each prediction with actionable insights and recommendations</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats">
+    <div class="stats-container">
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-number">
+                    <i class="fas fa-percentage"></i>
+                    <span>95+</span>
+                </div>
+                <p class="stat-label">Accuracy Rate</p>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">
+                    <i class="fas fa-clock"></i>
+                    <span>&lt;5s</span>
+                </div>
+                <p class="stat-label">Processing Time</p>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">
+                    <i class="fas fa-users"></i>
+                    <span>10K+</span>
+                </div>
+                <p class="stat-label">Trusted Users</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

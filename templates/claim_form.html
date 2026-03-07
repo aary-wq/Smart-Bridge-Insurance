@@ -1,0 +1,356 @@
+{% extends "base.html" %}
+
+{% block title %}Submit Claim - Insurance Fraud Detection{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/claim.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="claim-container">
+    <div class="claim-wrapper">
+        <div class="claim-card">
+            <!-- Header -->
+            <div class="claim-header">
+                <div class="claim-icon-circle">
+                    <i class="fas fa-file-medical"></i>
+                </div>
+                <h2 class="claim-title">Submit Insurance Claim</h2>
+                <p class="claim-subtitle">Fill in the details to check for potential fraud</p>
+            </div>
+
+            <!-- Form -->
+            <form method="POST" novalidate id="claimForm">
+                {{ form.hidden_tag() }}
+                
+                <!-- Policy Information Section -->
+                <div class="claim-section policy-section">
+                    <h3 class="claim-section-heading">
+                        <i class="fas fa-file-contract"></i>
+                        Policy Information
+                    </h3>
+                    
+                    <div class="claim-grid">
+                        <div class="claim-form-group">
+                            <label class="claim-label">
+                                <i class="fas fa-calendar-alt"></i>
+                                {{ form.months_as_customer.label.text }}
+                            </label>
+                            {{ form.months_as_customer(class="claim-input", placeholder="e.g., 24") }}
+                            {% if form.months_as_customer.errors %}
+                                <span class="claim-error">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    {{ form.months_as_customer.errors[0] }}
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        <div class="claim-form-group">
+                            <label class="claim-label">
+                                <i class="fas fa-certificate"></i>
+                                {{ form.policy_csl.label.text }}
+                            </label>
+                            {{ form.policy_csl(class="claim-input") }}
+                            {% if form.policy_csl.errors %}
+                                <span class="claim-error">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    {{ form.policy_csl.errors[0] }}
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        <div class="claim-form-group">
+                            <label class="claim-label">
+                                <i class="fas fa-hand-holding-usd"></i>
+                                {{ form.policy_deductable.label.text }}
+                            </label>
+                            {{ form.policy_deductable(class="claim-input", placeholder="e.g., 1000") }}
+                            {% if form.policy_deductable.errors %}
+                                <span class="claim-error">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    {{ form.policy_deductable.errors[0] }}
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        <div class="claim-form-group">
+                            <label class="claim-label">
+                                <i class="fas fa-money-bill-wave"></i>
+                                {{ form.policy_annual_premium.label.text }}
+                            </label>
+                            {{ form.policy_annual_premium(class="claim-input", placeholder="e.g., 1500.00") }}
+                            {% if form.policy_annual_premium.errors %}
+                                <span class="claim-error">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    {{ form.policy_annual_premium.errors[0] }}
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        <div class="claim-form-group">
+                            <label class="claim-label">
+                                <i class="fas fa-umbrella"></i>
+                                {{ form.umbrella_limit.label.text }}
+                            </label>
+                            {{ form.umbrella_limit(class="claim-input", placeholder="e.g., 10000000") }}
+                            {% if form.umbrella_limit.errors %}
+                                <span class="claim-error">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    {{ form.umbrella_limit.errors[0] }}
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        <div class="claim-form-group">
+                            <label class="claim-label">
+                                <i class="fas fa-chart-line"></i>
+                                {{ form.capital_gains.label.text }}
+                            </label>
+                            {{ form.capital_gains(class="claim-input", placeholder="e.g., 5000") }}
+                            {% if form.capital_gains.errors %}
+                                <span class="claim-error">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    {{ form.capital_gains.errors[0] }}
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        <div class="claim-form-group">
+                            <label class="claim-label">
+                                <i class="fas fa-chart-line-down"></i>
+                                {{ form.capital_loss.label.text }}
+                            </label>
+                            {{ form.capital_loss(class="claim-input", placeholder="e.g., 2000") }}
+                            {% if form.capital_loss.errors %}
+                                <span class="claim-error">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    {{ form.capital_loss.errors[0] }}
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Incident Details Section -->
+                <div class="claim-section incident-section">
+                    <h3 class="claim-section-heading">
+                        <i class="fas fa-car-crash"></i>
+                        Incident Details
+                    </h3>
+                    
+                    <div class="claim-grid">
+                        <div class="claim-form-group">
+                            <label class="claim-label">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                {{ form.incident_type.label.text }}
+                            </label>
+                            {{ form.incident_type(class="claim-input") }}
+                            {% if form.incident_type.errors %}
+                                <span class="claim-error">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    {{ form.incident_type.errors[0] }}
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        <div class="claim-form-group">
+                            <label class="claim-label">
+                                <i class="fas fa-car-side"></i>
+                                {{ form.collision_type.label.text }}
+                            </label>
+                            {{ form.collision_type(class="claim-input") }}
+                            {% if form.collision_type.errors %}
+                                <span class="claim-error">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    {{ form.collision_type.errors[0] }}
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        <div class="claim-form-group">
+                            <label class="claim-label">
+                                <i class="fas fa-heartbeat"></i>
+                                {{ form.incident_severity.label.text }}
+                            </label>
+                            {{ form.incident_severity(class="claim-input") }}
+                            {% if form.incident_severity.errors %}
+                                <span class="claim-error">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    {{ form.incident_severity.errors[0] }}
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        <div class="claim-form-group">
+                            <label class="claim-label">
+                                <i class="fas fa-phone-alt"></i>
+                                {{ form.authorities_contacted.label.text }}
+                            </label>
+                            {{ form.authorities_contacted(class="claim-input") }}
+                            {% if form.authorities_contacted.errors %}
+                                <span class="claim-error">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    {{ form.authorities_contacted.errors[0] }}
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        <div class="claim-form-group">
+                            <label class="claim-label">
+                                <i class="fas fa-clock"></i>
+                                {{ form.incident_hour_of_the_day.label.text }}
+                            </label>
+                            {{ form.incident_hour_of_the_day(class="claim-input", placeholder="0-23") }}
+                            {% if form.incident_hour_of_the_day.errors %}
+                                <span class="claim-error">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    {{ form.incident_hour_of_the_day.errors[0] }}
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        <div class="claim-form-group">
+                            <label class="claim-label">
+                                <i class="fas fa-car"></i>
+                                {{ form.number_of_vehicles_involved.label.text }}
+                            </label>
+                            {{ form.number_of_vehicles_involved(class="claim-input", placeholder="e.g., 2") }}
+                            {% if form.number_of_vehicles_involved.errors %}
+                                <span class="claim-error">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    {{ form.number_of_vehicles_involved.errors[0] }}
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        <div class="claim-form-group">
+                            <label class="claim-label">
+                                <i class="fas fa-home"></i>
+                                {{ form.property_damage.label.text }}
+                            </label>
+                            {{ form.property_damage(class="claim-input") }}
+                            {% if form.property_damage.errors %}
+                                <span class="claim-error">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    {{ form.property_damage.errors[0] }}
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        <div class="claim-form-group">
+                            <label class="claim-label">
+                                <i class="fas fa-user-injured"></i>
+                                {{ form.bodily_injuries.label.text }}
+                            </label>
+                            {{ form.bodily_injuries(class="claim-input", placeholder="e.g., 1") }}
+                            {% if form.bodily_injuries.errors %}
+                                <span class="claim-error">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    {{ form.bodily_injuries.errors[0] }}
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        <div class="claim-form-group">
+                            <label class="claim-label">
+                                <i class="fas fa-eye"></i>
+                                {{ form.witnesses.label.text }}
+                            </label>
+                            {{ form.witnesses(class="claim-input", placeholder="e.g., 2") }}
+                            {% if form.witnesses.errors %}
+                                <span class="claim-error">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    {{ form.witnesses.errors[0] }}
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        <div class="claim-form-group">
+                            <label class="claim-label">
+                                <i class="fas fa-file-alt"></i>
+                                {{ form.police_report_available.label.text }}
+                            </label>
+                            {{ form.police_report_available(class="claim-input") }}
+                            {% if form.police_report_available.errors %}
+                                <span class="claim-error">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    {{ form.police_report_available.errors[0] }}
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Claim Amounts Section -->
+                <div class="claim-section amounts-section">
+                    <h3 class="claim-section-heading">
+                        <i class="fas fa-dollar-sign"></i>
+                        Claim Amounts
+                    </h3>
+                    
+                    <div class="claim-grid claim-grid-2">
+                        <div class="claim-form-group">
+                            <label class="claim-label">
+                                <i class="fas fa-ambulance"></i>
+                                {{ form.injury_claim.label.text }}
+                            </label>
+                            {{ form.injury_claim(class="claim-input", placeholder="e.g., 5000.00") }}
+                            {% if form.injury_claim.errors %}
+                                <span class="claim-error">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    {{ form.injury_claim.errors[0] }}
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        <div class="claim-form-group">
+                            <label class="claim-label">
+                                <i class="fas fa-building"></i>
+                                {{ form.property_claim.label.text }}
+                            </label>
+                            {{ form.property_claim(class="claim-input", placeholder="e.g., 10000.00") }}
+                            {% if form.property_claim.errors %}
+                                <span class="claim-error">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    {{ form.property_claim.errors[0] }}
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        <div class="claim-form-group">
+                            <label class="claim-label">
+                                <i class="fas fa-car-burst"></i>
+                                {{ form.vehicle_claim.label.text }}
+                            </label>
+                            {{ form.vehicle_claim(class="claim-input", placeholder="e.g., 15000.00") }}
+                            {% if form.vehicle_claim.errors %}
+                                <span class="claim-error">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    {{ form.vehicle_claim.errors[0] }}
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn-detect" id="submitBtn">
+                    <i class="fas fa-search"></i>
+                    <span>Detect Fraud</span>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Add smooth form submission effect
+    document.getElementById('claimForm').addEventListener('submit', function() {
+        const btn = document.getElementById('submitBtn');
+        btn.classList.add('loading');
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Analyzing...</span>';
+    });
+</script>
+{% endblock %}

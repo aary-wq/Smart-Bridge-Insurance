@@ -1,0 +1,57 @@
+<nav class="navbar" id="navbar">
+    <div class="nav-container">
+        <a href="{{ url_for('index') }}" class="nav-brand">
+            <i class="fas fa-shield-halved"></i>
+            <span>Fraud Detection</span>
+        </a>
+        
+        <!-- Mobile Menu Toggle -->
+        <div class="menu-toggle" id="menuToggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        
+        <ul class="nav-menu" id="navMenu">
+            {% if current_user.is_authenticated %}
+                <li>
+                    <a href="{{ url_for('claim_form') }}">
+                        <i class="fas fa-file-medical"></i>
+                        <span>Submit Claim</span>
+                    </a>
+                </li>
+                <li>
+                    <span class="user-badge">
+                        <i class="fas fa-user-circle"></i>
+                        <span>{{ current_user.name }}</span>
+                    </span>
+                </li>
+                <li>
+                    <a href="{{ url_for('logout') }}" class="btn-logout">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Logout</span>
+                    </a>
+                </li>
+            {% else %}
+                <li>
+                    <a href="{{ url_for('index') }}">
+                        <i class="fas fa-home"></i>
+                        <span>Home</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('login') }}">
+                        <i class="fas fa-sign-in-alt"></i>
+                        <span>Login</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('signup') }}" class="btn-nav btn-primary-nav">
+                        <i class="fas fa-user-plus"></i>
+                        <span>Sign Up</span>
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+    </div>
+</nav>

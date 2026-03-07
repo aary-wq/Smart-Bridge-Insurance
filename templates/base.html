@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Insurance Fraud Detection{% endblock %}</title>
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Base CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    
+    <!-- Component CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+    
+    <!-- Page Specific CSS -->
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation -->
+    {% include '/navbar.html' %}
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="alert-container">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        <div class="alert-content">
+                            <i class="fas 
+                                {% if category == 'success' %}fa-check-circle
+                                {% elif category == 'warning' %}fa-exclamation-triangle
+                                {% elif category == 'danger' %}fa-times-circle
+                                {% else %}fa-info-circle{% endif %}"></i>
+                            <span>{{ message }}</span>
+                        </div>
+                        <button class="close-alert" onclick="this.parentElement.remove()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>
+                <i class="fas fa-copyright"></i>
+                <span>2024 Insurance Fraud Detection System. All rights reserved.</span>
+            </p>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

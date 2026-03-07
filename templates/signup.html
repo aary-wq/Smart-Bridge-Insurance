@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block title %}Sign Up - Insurance Fraud Detection{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card auth-card-large">
+        <div class="auth-header">
+            <div class="icon-circle">
+                <i class="fas fa-user-plus"></i>
+            </div>
+            <h2 class="auth-title">Create Your Account</h2>
+            <p class="auth-subtitle">Join us to start detecting fraudulent claims</p>
+        </div>
+
+        <form method="POST" novalidate>
+            {{ form.hidden_tag() }}
+            
+            <!-- Account Information Section -->
+            <div class="form-section account-section">
+                <h3 class="section-heading account-heading">
+                    <i class="fas fa-user-circle"></i>
+                    Account Information
+                </h3>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-id-card"></i>
+                        {{ form.name.label.text }}
+                    </label>
+                    {{ form.name(class="form-control", placeholder="Enter your full name") }}
+                    {% if form.name.errors %}
+                        <span class="error-message">
+                            <i class="fas fa-exclamation-circle"></i>
+                            {{ form.name.errors[0] }}
+                        </span>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-envelope"></i>
+                        {{ form.email.label.text }}
+                    </label>
+                    {{ form.email(class="form-control", placeholder="Enter your email") }}
+                    {% if form.email.errors %}
+                        <span class="error-message">
+                            <i class="fas fa-exclamation-circle"></i>
+                            {{ form.email.errors[0] }}
+                        </span>
+                    {% endif %}
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-key"></i>
+                            {{ form.password.label.text }}
+                        </label>
+                        {{ form.password(class="form-control", placeholder="Create a password") }}
+                        {% if form.password.errors %}
+                            <span class="error-message">
+                                <i class="fas fa-exclamation-circle"></i>
+                                {{ form.password.errors[0] }}
+                            </span>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-lock"></i>
+                            {{ form.confirm_password.label.text }}
+                        </label>
+                        {{ form.confirm_password(class="form-control", placeholder="Confirm password") }}
+                        {% if form.confirm_password.errors %}
+                            <span class="error-message">
+                                <i class="fas fa-exclamation-circle"></i>
+                                {{ form.confirm_password.errors[0] }}
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Personal Information Section -->
+            <div class="form-section personal-section">
+                <h3 class="section-heading personal-heading">
+                    <i class="fas fa-id-badge"></i>
+                    Personal Information
+                </h3>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-venus-mars"></i>
+                            {{ form.insured_sex.label.text }}
+                        </label>
+                        {{ form.insured_sex(class="form-control") }}
+                        {% if form.insured_sex.errors %}
+                            <span class="error-message">
+                                <i class="fas fa-exclamation-circle"></i>
+                                {{ form.insured_sex.errors[0] }}
+                            </span>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-graduation-cap"></i>
+                            {{ form.insured_education_level.label.text }}
+                        </label>
+                        {{ form.insured_education_level(class="form-control") }}
+                        {% if form.insured_education_level.errors %}
+                            <span class="error-message">
+                                <i class="fas fa-exclamation-circle"></i>
+                                {{ form.insured_education_level.errors[0] }}
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-briefcase"></i>
+                            {{ form.insured_occupation.label.text }}
+                        </label>
+                        {{ form.insured_occupation(class="form-control") }}
+                        {% if form.insured_occupation.errors %}
+                            <span class="error-message">
+                                <i class="fas fa-exclamation-circle"></i>
+                                {{ form.insured_occupation.errors[0] }}
+                            </span>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-user-friends"></i>
+                            {{ form.insured_relationship.label.text }}
+                        </label>
+                        {{ form.insured_relationship(class="form-control") }}
+                        {% if form.insured_relationship.errors %}
+                            <span class="error-message">
+                                <i class="fas fa-exclamation-circle"></i>
+                                {{ form.insured_relationship.errors[0] }}
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit">
+                <i class="fas fa-user-plus"></i>
+                <span>Sign Up</span>
+            </button>
+        </form>
+
+        <div class="form-footer">
+            <p>
+                Already have an account? 
+                <a href="{{ url_for('login') }}">
+                    Login here <i class="fas fa-arrow-right"></i>
+                </a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
