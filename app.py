@@ -1,9 +1,13 @@
-from flask import Flask, render_template, redirect, url_for, flash, request
+from flask import Flask, render_template, redirect, url_for, flash, request, jsonify
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from models import db, User, Claim
 from forms import SignupForm, LoginForm, ClaimForm
 from config import Config
 import numpy as np
+from models import db, User, Claim
+from forms import SignupForm, LoginForm, ClaimForm
+from config import Config
+from ml_predictor import predictor
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -114,38 +118,73 @@ def claim_form():
             vehicle_claim=form.vehicle_claim.data
         )
         
-        # TODO: Add your ML model prediction here
-        # For now, using a dummy prediction
-        prediction, confidence = predict_fraud(claim, current_user)
-        claim.fraud_prediction = prediction
-        claim.prediction_confidence = confidence
+        # Get predictions from all models
+        prediction_result = predictor.predict_all_models(claim, current_user)
+        reasons = predictor.get_fraud_reasons(claim, current_user, prediction_result)
+        
+        # Store prediction results
+        claim.fraud_prediction = prediction_result['overall_prediction']
+        claim.prediction_confidence = prediction_result['overall_confidence']
         
         db.session.add(claim)
         db.session.commit()
         
-        flash(f'Fraud Detection Result: {prediction} (Confidence: {confidence:.2f}%)', 
-              'success' if prediction == 'NOT FRAUD' else 'warning')
+        # Check if it's an AJAX request
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return jsonify({
+                'success': True,
+                'claim_id': claim.id,
+                'overall_prediction': prediction_result['overall_prediction'],
+                'overall_confidence': prediction_result['overall_confidence'],
+                'fraud_count': prediction_result['fraud_count'],
+                'not_fraud_count': prediction_result['not_fraud_count'],
+                'total_models': prediction_result['total_models'],
+                'reasons': reasons,
+                'model_predictions': prediction_result['model_predictions']
+            })
         
+        # Fallback for non-AJAX requests
+        flash(f'Claim submitted! Prediction: {prediction_result["overall_prediction"]}', 'success')
         return redirect(url_for('claim_form'))
+
+    # Return validation errors for AJAX
+    if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        errors = {}
+        print("FORM ERRORS:", form.errors)
+        for field, field_errors in form.errors.items():
+            errors[field] = field_errors[0]
+        return jsonify({'success': False, 'errors': errors}), 400
     
     return render_template('claim_form.html', form=form, user=current_user)
 
-
-def predict_fraud(claim, user):
-    """
-    Placeholder function for fraud prediction.
-    Replace this with your actual ML model.
-    """
-    # This is a dummy prediction logic
-    # Replace with your trained model
+@app.route('/api/model-detail/<model_name>/<int:claim_id>')
+@login_required
+def get_model_detail(model_name, claim_id):
+    """API endpoint to get specific model prediction details"""
+    claim = Claim.query.get_or_404(claim_id)
     
-    total_claim = claim.injury_claim + claim.property_claim + claim.vehicle_claim
+    # Verify claim belongs to current user
+    if claim.user_id != current_user.id:
+        return jsonify({'error': 'Unauthorized'}), 403
     
-    # Simple rule-based dummy prediction
-    if total_claim > 50000 or claim.witnesses == 0:
-        return "POTENTIAL FRAUD", np.random.uniform(60, 95)
-    else:
-        return "NOT FRAUD", np.random.uniform(60, 95)
+    # Get fresh prediction for this specific model
+    prediction_result = predictor.predict_all_models(claim, current_user)
+    
+    if model_name in prediction_result['model_predictions']:
+        model_pred = prediction_result['model_predictions'][model_name]
+        return jsonify({
+            'model_name': model_name,
+            'prediction': 'FRAUD' if model_pred['is_fraud'] else 'NOT FRAUD',
+            'confidence': model_pred.get('confidence'),
+            'details': {
+                'total_claim': claim.injury_claim + claim.property_claim + claim.vehicle_claim,
+                'witnesses': claim.witnesses,
+                'police_report': claim.police_report_available,
+                'incident_severity': claim.incident_severity
+            }
+        })
+    
+    return jsonify({'error': 'Model not found'}), 404
 
 
 if __name__ == '__main__':

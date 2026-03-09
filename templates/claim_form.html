@@ -339,18 +339,260 @@
                     <span>Detect Fraud</span>
                 </button>
             </form>
+
+        <!-- Results Section (Hidden by default) -->
+        <div class="results-section" id="resultsSection" style="display: none;">
+            <div class="results-header">
+                <h2 class="results-main-title">
+                    <i class="fas fa-chart-line"></i> Fraud Detection Result
+                </h2>
+                
+                <div class="prediction-badge-large" id="predictionBadge">
+                    <i class="fas fa-shield-alt"></i>
+                    <span id="predictionText"></span>
+                </div>
+                
+                <p class="confidence-text">
+                    Confidence: <span id="confidenceValue">0</span>%
+                </p>
+            </div>
+
+            <div class="model-votes-container">
+                <div class="vote-card vote-card-fraud">
+                    <div class="vote-count vote-count-fraud" id="fraudCount">0</div>
+                    <div class="vote-text vote-text-fraud">Models Detected Fraud</div>
+                </div>
+                <div class="vote-card vote-card-safe">
+                    <div class="vote-count vote-count-safe" id="safeCount">0</div>
+                    <div class="vote-text vote-text-safe">Models Say Legitimate</div>
+                </div>
+            </div>
+
+            <div class="reasons-container">
+                <h3 class="reasons-title">
+                    <i class="fas fa-list-check"></i>
+                    Analysis Details
+                </h3>
+                <ul class="reasons-list" id="reasonsList">
+                    <!-- Reasons will be populated by JavaScript -->
+                </ul>
+            </div>
+
+            <div class="model-selector-container">
+                <h3 class="model-selector-title">
+                    <i class="fas fa-robot"></i>
+                    View Individual Model Predictions
+                </h3>
+                <select class="model-select" id="modelSelect">
+                    <option value="">-- Select a Model --</option>
+                </select>
+
+                <div class="model-detail-card" id="modelDetailCard">
+                    <!-- Model details will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <div class="action-buttons-container">
+                <button type="button" class="btn-action btn-new-claim" onclick="resetForm()">
+                    <i class="fas fa-plus"></i>
+                    Submit Another Claim
+                </button>
+                <a href="{{ url_for('index') }}" class="btn-action btn-home">
+                    <i class="fas fa-home"></i>
+                    Back to Home
+                </a>
+            </div>
         </div>
+
     </div>
+</div>
+</div>
+
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loadingOverlay">
+<div class="loading-spinner">
+    <i class="fas fa-spinner spinner-icon"></i>
+    <div class="loading-text">Analyzing Claim...</div>
+</div>
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-    // Add smooth form submission effect
-    document.getElementById('claimForm').addEventListener('submit', function() {
-        const btn = document.getElementById('submitBtn');
-        btn.classList.add('loading');
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Analyzing...</span>';
-    });
+let currentPredictionData = null;
+
+// Form submission with AJAX
+document.getElementById('claimForm').addEventListener('submit', function(e) {
+e.preventDefault();
+
+const formData = new FormData(this);
+const submitBtn = document.getElementById('submitBtn');
+const loadingOverlay = document.getElementById('loadingOverlay');
+
+// Show loading
+submitBtn.disabled = true;
+submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Analyzing...</span>';
+loadingOverlay.classList.add('active');
+
+// Hide previous results
+document.getElementById('resultsSection').style.display = 'none';
+
+// Submit via AJAX
+fetch('{{ url_for("claim_form") }}', {
+    method: 'POST',
+    headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+    },
+    body: formData
+})
+.then(async response => {
+    const data = await response.json();
+    return {status: response.status, body: data};
+})
+.then(({status, body}) => {
+    // Hide loading
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = '<i class="fas fa-search"></i><span>Detect Fraud</span>';
+    loadingOverlay.classList.remove('active');
+    
+    if (status === 200 && body.success) {
+        // Store prediction data
+        currentPredictionData = body;
+        
+        // Display results
+        displayResults(body);
+        
+        // Scroll to results
+        setTimeout(() => {
+            document.getElementById('resultsSection').scrollIntoView({ 
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }, 300);
+    } else {
+        // Handle validation errors
+        console.log("Form errors:", body.errors);
+        alert("Please fix the highlighted fields.");
+    }
+})
+.catch(error => {
+    // Hide loading
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = '<i class="fas fa-search"></i><span>Detect Fraud</span>';
+    loadingOverlay.classList.remove('active');
+    
+    console.error('Error:', error);
+    alert('An error occurred. Please try again.');
+});
+});
+
+function displayResults(data) {
+const resultsSection = document.getElementById('resultsSection');
+const predictionBadge = document.getElementById('predictionBadge');
+const predictionText = document.getElementById('predictionText');
+const confidenceValue = document.getElementById('confidenceValue');
+const fraudCount = document.getElementById('fraudCount');
+const safeCount = document.getElementById('safeCount');
+const reasonsList = document.getElementById('reasonsList');
+const modelSelect = document.getElementById('modelSelect');
+
+// Set prediction result
+predictionText.textContent = data.overall_prediction;
+confidenceValue.textContent = data.overall_confidence.toFixed(2);
+
+// Set badge class
+predictionBadge.className = 'prediction-badge-large ' + 
+    (data.overall_prediction === 'FRAUD' ? 'badge-fraud' : 'badge-safe');
+
+// Set vote counts
+fraudCount.textContent = data.fraud_count;
+safeCount.textContent = data.not_fraud_count;
+
+// Populate reasons
+reasonsList.innerHTML = '';
+data.reasons.forEach(reason => {
+    const li = document.createElement('li');
+    li.className = 'reason-item';
+    li.innerHTML = `
+        <i class="fas fa-arrow-right reason-icon"></i>
+        <span>${reason}</span>
+    `;
+    reasonsList.appendChild(li);
+});
+
+// Populate model dropdown
+modelSelect.innerHTML = '<option value="">-- Select a Model --</option>';
+Object.keys(data.model_predictions).forEach(modelName => {
+    const option = document.createElement('option');
+    option.value = modelName;
+    option.textContent = modelName;
+    modelSelect.appendChild(option);
+});
+
+// Show results section
+resultsSection.style.display = 'block';
+}
+
+// Model selection handler
+document.getElementById('modelSelect').addEventListener('change', function() {
+const modelName = this.value;
+const detailCard = document.getElementById('modelDetailCard');
+
+if (!modelName || !currentPredictionData) {
+    detailCard.classList.remove('active');
+    return;
+}
+
+const modelData = currentPredictionData.model_predictions[modelName];
+
+if (modelData.error) {
+    detailCard.innerHTML = `
+        <div style="color: #ef4444; text-align: center;">
+            <i class="fas fa-exclamation-circle" style="font-size: 2rem;"></i>
+            <p style="margin-top: 1rem;">Error: ${modelData.error}</p>
+        </div>
+    `;
+} else {
+    const predictionText = modelData.is_fraud ? 'FRAUD DETECTED' : 'LEGITIMATE CLAIM';
+    const predictionColor = modelData.is_fraud ? '#991b1b' : '#065f46';
+    const predictionBg = modelData.is_fraud ? 
+        'linear-gradient(135deg, #fee2e2 0%, #fecaca 100%)' : 
+        'linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%)';
+    const confidenceText = modelData.confidence ? 
+        `${modelData.confidence.toFixed(2)}%` : 'N/A';
+    
+    detailCard.innerHTML = `
+        <h4 class="model-detail-header">
+            <i class="fas fa-microchip"></i>
+            ${modelName}
+        </h4>
+        <div class="model-detail-grid">
+            <div class="detail-box">
+                <div class="detail-label">Prediction</div>
+                <div class="detail-value" style="color: ${predictionColor}; background: ${predictionBg}; padding: 1rem; border-radius: 12px; border: 2px solid ${predictionColor};">
+                    ${predictionText}
+                </div>
+            </div>
+            <div class="detail-box">
+                <div class="detail-label">Confidence</div>
+                <div class="detail-value" style="color: #667eea;">
+                    ${confidenceText}
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+detailCard.classList.add('active');
+});
+
+function resetForm() {
+document.getElementById('claimForm').reset();
+document.getElementById('resultsSection').style.display = 'none';
+currentPredictionData = null;
+
+// Scroll to top
+window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 </script>
 {% endblock %}

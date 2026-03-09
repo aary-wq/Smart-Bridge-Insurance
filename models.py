@@ -2,6 +2,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
+from sqlalchemy.types import JSON
 
 db = SQLAlchemy()
 
@@ -60,7 +61,9 @@ class Claim(db.Model):
     vehicle_claim = db.Column(db.Float, nullable=False)
     
     # Prediction result
-    fraud_prediction = db.Column(db.String(20))
-    prediction_confidence = db.Column(db.Float)
+    # model_predictions_json = db.Column(db.Text, nullable=True)  
+    fraud_prediction = db.Column(db.String(20), nullable=True)
+    prediction_confidence = db.Column(db.Float, nullable=True)
+    model_predictions_json = db.Column(db.Text, nullable=True)  # Store JSON of all model predictions
     
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
